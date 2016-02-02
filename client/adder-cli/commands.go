@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/nii236/goa-adder/client"
+	"github.com/nii236/go-react-webpack/client"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

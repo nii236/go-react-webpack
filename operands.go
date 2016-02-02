@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/goadesign/goa"
-	"github.com/nii236/goa-adder/app"
+	"github.com/nii236/go-react-webpack/app"
 )
 
 // OperandsController implements theoperands resource.

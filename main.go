@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/goadesign/goa"
 	"github.com/goadesign/middleware"
-	"github.com/nii236/goa-adder/app"
-	"github.com/nii236/goa-adder/js"
-	"github.com/nii236/goa-adder/swagger"
+	"github.com/nii236/go-react-webpack/app"
+	"github.com/nii236/go-react-webpack/js"
+	"github.com/nii236/go-react-webpack/swagger"
 )
 
 func main() {

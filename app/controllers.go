@@ -3,8 +3,8 @@
 //
 // Generated with goagen v0.0.1, command line:
 // $ goagen
-// --out=$(GOPATH)/src/github.com/nii236/goa-adder
-// --design=github.com/nii236/goa-adder/design
+// --out=$(GOPATH)/src/github.com/nii236/go-react-webpack
+// --design=github.com/nii236/go-react-webpack/design
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -21,6 +21,15 @@ type OperandsController interface {
 
 // MountOperandsController "mounts" a Operands resource controller on the given service.
 func MountOperandsController(service goa.Service, ctrl OperandsController) {
+	// Setup encoders and decoders. This is idempotent and is done by each MountXXX function.
+	service.SetEncoder(goa.GobEncoderFactory(), false, "application/gob", "application/x-gob")
+	service.SetEncoder(goa.JSONEncoderFactory(), true, "application/json")
+	service.SetEncoder(goa.XMLEncoderFactory(), false, "application/xml", "text/xml")
+	service.SetDecoder(goa.GobDecoderFactory(), false, "application/gob", "application/x-gob")
+	service.SetDecoder(goa.JSONDecoderFactory(), true, "application/json")
+	service.SetDecoder(goa.XMLDecoderFactory(), false, "application/xml", "text/xml")
+
+	// Setup endpoint handler
 	var h goa.Handler
 	mux := service.ServeMux()
 	h = func(c *goa.Context) error {
