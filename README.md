@@ -11,7 +11,7 @@ Clone the repo:
 ```
 mkdir $GOPATH/src/github.com/nii236
 cd $GOPATH/src/github.com/nii236
-git@github.com:nii236/go-react-webpack.git
+git clone git@github.com:nii236/go-react-webpack.git
 cd go-react-webpack
 ```
 
@@ -44,7 +44,6 @@ Host the ReactJS front-end on `webpack-dev-server`:
 cd js/react
 npm start
 ```
-
 
 Visit [http://localhost:3000/](http://localhost:3000/) and you can edit the JS project and watch your changes live!.
 
