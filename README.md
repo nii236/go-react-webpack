@@ -1,4 +1,4 @@
-[](/screenshots/screenshot.png)
+![Screenshot](/screenshots/screenshot.png)
 
 Early boilerplate app for:
 
