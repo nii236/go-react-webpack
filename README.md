@@ -25,17 +25,40 @@ go get
 go build
 ```
 
-Build the ReactJS frontend:
+Install JS dependencies:
 ```
 cd js/react
 npm install
-TARGET=prod webpack
-cd ../../
+npm install -g webpack
 ```
+
+## For front-end development
 
 Run the API
 ```
 ./go-react-webpack
+```
+
+Host the ReactJS front-end on `webpack-dev-server`:
+```
+cd js/react
+npm start
+```
+
+
+Visit [http://localhost:3000/](http://localhost:3000/) and you can edit the JS project and watch your changes live!.
+
+## For production
+
+Run the API
+```
+./go-react-webpack
+```
+
+Build the ReactJS front-end. This will be served by the Go `jsController` service:
+```
+cd js/react
+TARGET=prod webpack
 ```
 
 Visit [http://localhost:8080/ui/](http://localhost:8080/ui/).
