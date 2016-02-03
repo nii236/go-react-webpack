@@ -3,7 +3,7 @@ var webpack = require('webpack');
 var TARGET = process.env.TARGET;
 
 var config = {
-  devtool: 'eval',
+  devtool: 'eval-source-map',
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
@@ -23,6 +23,11 @@ var config = {
       loaders: ['react-hot', 'babel'],
       include: path.join(__dirname, 'app')
     }]
+  },
+  resolve: {
+    root: [
+      path.resolve(__dirname)
+    ]
   }
 };
 
