@@ -1,3 +1,5 @@
+[](/screenshots/screenshot.jpg)
+
 Early boilerplate app for:
 
 - Go
