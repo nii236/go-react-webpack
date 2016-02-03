@@ -1,4 +1,4 @@
-[](/screenshots/screenshot.jpg)
+[](/screenshots/screenshot.png)
 
 Early boilerplate app for:
 
