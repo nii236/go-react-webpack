@@ -1,4 +1,4 @@
-![Screenshot](/screenshots/screenshot.png)
+![Screenshot](/screenshots/adder.png)
 
 Early boilerplate app for:
 
