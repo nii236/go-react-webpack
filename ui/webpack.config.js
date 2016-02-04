@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 var TARGET = process.env.TARGET;
 
 var config = {
@@ -12,10 +13,13 @@ var config = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/static/'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'App/Views/template.html'
+    })
   ],
   module: {
     loaders: [{
@@ -52,7 +56,11 @@ if (TARGET === 'prod') {
         'process.env': { NODE_ENV: JSON.stringify('production') }
       }),
       new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.OccurenceOrderPlugin()
+      new webpack.optimize.OccurenceOrderPlugin(),
+      new HtmlWebpackPlugin({
+              filename: 'index.html',
+              template: 'App/Views/template.html'
+      })
     ],
     module: {
       loaders: [{
@@ -60,6 +68,11 @@ if (TARGET === 'prod') {
         loaders: ['react-hot', 'babel'],
         include: path.join(__dirname, 'app')
       }]
+    },
+    resolve: {
+      root: [
+        path.resolve(__dirname)
+      ]
     }
   };
 }

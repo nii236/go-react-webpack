@@ -5,6 +5,7 @@
 // $ goagen
 // --out=$(GOPATH)/src/github.com/nii236/go-react-webpack
 // --design=github.com/nii236/go-react-webpack/design
+// --pkg=app
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
@@ -17,6 +18,7 @@ import "github.com/goadesign/goa"
 type OperandsController interface {
 	goa.Controller
 	Add(*AddOperandsContext) error
+	Multiply(*MultiplyOperandsContext) error
 }
 
 // MountOperandsController "mounts" a Operands resource controller on the given service.
@@ -41,4 +43,13 @@ func MountOperandsController(service goa.Service, ctrl OperandsController) {
 	}
 	mux.Handle("GET", "/add/:left/:right", ctrl.HandleFunc("Add", h, nil))
 	service.Info("mount", "ctrl", "Operands", "action", "Add", "route", "GET /add/:left/:right")
+	h = func(c *goa.Context) error {
+		ctx, err := NewMultiplyOperandsContext(c)
+		if err != nil {
+			return goa.NewBadRequestError(err)
+		}
+		return ctrl.Multiply(ctx)
+	}
+	mux.Handle("GET", "/multiply/:left/:right", ctrl.HandleFunc("Multiply", h, nil))
+	service.Info("mount", "ctrl", "Operands", "action", "Multiply", "route", "GET /multiply/:left/:right")
 }

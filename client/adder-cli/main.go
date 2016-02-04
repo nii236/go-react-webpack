@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
-
 	"github.com/nii236/go-react-webpack/client"
-	"gopkg.in/alecthomas/kingpin.v2"
+	"github.com/spf13/cobra"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"time"
 )
 
 // PrettyPrint is true if the tool output should be formatted for human consumption.
@@ -15,37 +16,31 @@ var PrettyPrint bool
 
 func main() {
 	// Create command line parser
-	app := kingpin.New("adder-cli", "CLI client for the adder service")
+	app := &cobra.Command{
+		Use:   "adder-cli",
+		Short: "CLI client for the adder service",
+	}
 	c := client.New()
 	c.UserAgent = "adder-cli/1.0"
-	app.Flag("scheme", "Set the requests scheme").Short('s').Default("http").StringVar(&c.Scheme)
-	app.Flag("host", "API hostname").Short('h').Default("localhost:8080").StringVar(&c.Host)
-	app.Flag("timeout", "Set the request timeout, defaults to 20s").Short('t').Default("20s").DurationVar(&c.Timeout)
-	app.Flag("dump", "Dump HTTP request and response.").BoolVar(&c.Dump)
-	app.Flag("pp", "Pretty print response body").BoolVar(&PrettyPrint)
-	commands := RegisterCommands(app)
-	// Make "client-cli <action> [<resource>] --help" equivalent to
-	// "client-cli help <action> [<resource>]"
-	if os.Args[len(os.Args)-1] == "--help" {
-		args := append([]string{os.Args[0], "help"}, os.Args[1:len(os.Args)-1]...)
-		os.Args = args
+	app.PersistentFlags().StringVarP(&c.Scheme, "scheme", "s", "http", "Set the requests scheme")
+	app.PersistentFlags().StringVarP(&c.Host, "host", "H", "localhost:8080", "API hostname")
+	app.PersistentFlags().DurationVarP(&c.Timeout, "timeout", "t", time.Duration(20)*time.Second, "Set the request timeout, defaults to 20s")
+	app.PersistentFlags().BoolVar(&c.Dump, "dump", false, "Dump HTTP request and response.")
+	app.PersistentFlags().BoolVar(&PrettyPrint, "pp", false, "Pretty print response body")
+	RegisterCommands(app, c)
+	if err := app.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "request failed: %s", err)
+		os.Exit(-1)
 	}
-	cmdName, err := app.Parse(os.Args[1:])
-	if err != nil {
-		kingpin.Fatalf(err.Error())
-	}
-	cmd, ok := commands[cmdName]
-	if !ok {
-		kingpin.Fatalf("unknown command %s", cmdName)
-	}
-	resp, err := cmd.Run(c)
-	if err != nil {
-		kingpin.Fatalf("request failed: %s", err)
-	}
+}
+
+// HandleResponse unmarshals the response body and analyzes the status code to print then exit.
+func HandleResponse(c *client.Client, resp *http.Response) {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		kingpin.Fatalf("failed to read body: %s", err)
+		fmt.Fprintf(os.Stderr, "failed to read body: %s", err)
+		os.Exit(-1)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		// Let user know if something went wrong
@@ -94,14 +89,33 @@ func main() {
 }
 
 // RegisterCommands all the resource action subcommands to the application command line.
-func RegisterCommands(app *kingpin.Application) map[string]client.ActionCommand {
-	res := make(map[string]client.ActionCommand)
-	var command, sub *kingpin.CmdClause
-	command = app.Command("add", "add returns the sum of the left and right parameters in the response body")
+func RegisterCommands(app *cobra.Command, c *client.Client) {
+	var command, sub *cobra.Command
+	command = &cobra.Command{
+		Use:   "add",
+		Short: "add returns the sum of the left and right parameters in the response body",
+	}
 	tmp1 := new(AddOperandsCommand)
-	sub = command.Command("operands", "")
+	sub = &cobra.Command{
+		Use:   "operands",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
+	}
 	tmp1.RegisterFlags(sub)
-	res["add operands"] = tmp1
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "multiply",
+		Short: "multiply returns the multiplication of the left and right parameters in the response body",
+	}
+	tmp2 := new(MultiplyOperandsCommand)
+	sub = &cobra.Command{
+		Use:   "operands",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
+	}
+	tmp2.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
 
-	return res
 }

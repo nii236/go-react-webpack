@@ -22,3 +22,8 @@ func (c *OperandsController) Add(ctx *app.AddOperandsContext) error {
 	sum := ctx.Left + ctx.Right
 	return ctx.OK([]byte(strconv.Itoa(sum)))
 }
+
+func (c *OperandsController) Multiply(ctx *app.MultiplyOperandsContext) error {
+	multiply := ctx.Left * ctx.Right
+	return ctx.OK([]byte(strconv.Itoa(multiply)))
+}

@@ -5,6 +5,7 @@
 // $ goagen
 // --out=$(GOPATH)/src/github.com/nii236/go-react-webpack
 // --design=github.com/nii236/go-react-webpack/design
+// --pkg=app
 //
 // The content of this file is auto-generated, DO NOT MODIFY
 //************************************************************************//
