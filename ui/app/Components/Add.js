@@ -24,8 +24,8 @@ export default class Operands extends Component {
         this.setState({answer: response.data})
       })
       .catch( (response) => {
-        console.log(response);
-        this.setState({answer: response.data})
+        console.log("DERP");
+        this.setState({answer: "API Error"})
       });
 
   }
