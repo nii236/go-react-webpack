@@ -19,7 +19,7 @@ func main() {
 	service.Use(middleware.Recover())
 	cspec, err := cors.New(func() {
 		cors.Origin("*", func() {
-			cors.Resource("/add/*", func() {
+			cors.Resource("/*", func() {
 				cors.Headers("Accept", "Content-Type", "Origin", "Authorization")
 				cors.Methods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 				cors.MaxAge(600)
