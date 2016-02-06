@@ -23,6 +23,7 @@ func (c *OperandsController) Add(ctx *app.AddOperandsContext) error {
 	return ctx.OK([]byte(strconv.Itoa(sum)))
 }
 
+//Multiply runs the multiply action
 func (c *OperandsController) Multiply(ctx *app.MultiplyOperandsContext) error {
 	multiply := ctx.Left * ctx.Right
 	return ctx.OK([]byte(strconv.Itoa(multiply)))

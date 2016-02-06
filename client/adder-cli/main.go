@@ -105,16 +105,55 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "multiply",
-		Short: "multiply returns the multiplication of the left and right parameters in the response body",
+		Use:   "login",
+		Short: "login lets the user login to their previously registered account",
 	}
-	tmp2 := new(MultiplyOperandsCommand)
+	tmp2 := new(LoginAuthenticationCommand)
 	sub = &cobra.Command{
-		Use:   "operands",
+		Use:   "authentication",
 		Short: "",
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
 	tmp2.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "logout",
+		Short: "logout lets the user logout to their previously registered account",
+	}
+	tmp3 := new(LogoutAuthenticationCommand)
+	sub = &cobra.Command{
+		Use:   "authentication",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
+	}
+	tmp3.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "multiply",
+		Short: "multiply returns the multiplication of the left and right parameters in the response body",
+	}
+	tmp4 := new(MultiplyOperandsCommand)
+	sub = &cobra.Command{
+		Use:   "operands",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
+	}
+	tmp4.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "signup",
+		Short: "signup lets a user create a new account",
+	}
+	tmp5 := new(SignupAuthenticationCommand)
+	sub = &cobra.Command{
+		Use:   "authentication",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
+	}
+	tmp5.RegisterFlags(sub)
 	command.AddCommand(sub)
 	app.AddCommand(command)
 

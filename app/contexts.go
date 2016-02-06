@@ -17,6 +17,108 @@ import (
 	"strconv"
 )
 
+// LoginAuthenticationContext provides the authentication login action context.
+type LoginAuthenticationContext struct {
+	*goa.Context
+	Pass     string
+	Password *string
+	User     string
+}
+
+// NewLoginAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller login action.
+func NewLoginAuthenticationContext(c *goa.Context) (*LoginAuthenticationContext, error) {
+	var err error
+	ctx := LoginAuthenticationContext{Context: c}
+	rawPass := c.Get("pass")
+	if rawPass != "" {
+		ctx.Pass = rawPass
+	}
+	rawPassword := c.Get("password")
+	if rawPassword != "" {
+		ctx.Password = &rawPassword
+	}
+	rawUser := c.Get("user")
+	if rawUser != "" {
+		ctx.User = rawUser
+	}
+	return &ctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *LoginAuthenticationContext) OK(resp []byte) error {
+	ctx.Header().Set("Content-Type", "plain/text")
+	return ctx.RespondBytes(200, resp)
+}
+
+// LogoutAuthenticationContext provides the authentication logout action context.
+type LogoutAuthenticationContext struct {
+	*goa.Context
+	Pass     string
+	Password *string
+	User     string
+}
+
+// NewLogoutAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller logout action.
+func NewLogoutAuthenticationContext(c *goa.Context) (*LogoutAuthenticationContext, error) {
+	var err error
+	ctx := LogoutAuthenticationContext{Context: c}
+	rawPass := c.Get("pass")
+	if rawPass != "" {
+		ctx.Pass = rawPass
+	}
+	rawPassword := c.Get("password")
+	if rawPassword != "" {
+		ctx.Password = &rawPassword
+	}
+	rawUser := c.Get("user")
+	if rawUser != "" {
+		ctx.User = rawUser
+	}
+	return &ctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *LogoutAuthenticationContext) OK(resp []byte) error {
+	ctx.Header().Set("Content-Type", "plain/text")
+	return ctx.RespondBytes(200, resp)
+}
+
+// SignupAuthenticationContext provides the authentication signup action context.
+type SignupAuthenticationContext struct {
+	*goa.Context
+	Pass     string
+	Password *string
+	User     string
+}
+
+// NewSignupAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller signup action.
+func NewSignupAuthenticationContext(c *goa.Context) (*SignupAuthenticationContext, error) {
+	var err error
+	ctx := SignupAuthenticationContext{Context: c}
+	rawPass := c.Get("pass")
+	if rawPass != "" {
+		ctx.Pass = rawPass
+	}
+	rawPassword := c.Get("password")
+	if rawPassword != "" {
+		ctx.Password = &rawPassword
+	}
+	rawUser := c.Get("user")
+	if rawUser != "" {
+		ctx.User = rawUser
+	}
+	return &ctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *SignupAuthenticationContext) OK(resp []byte) error {
+	ctx.Header().Set("Content-Type", "plain/text")
+	return ctx.RespondBytes(200, resp)
+}
+
 // AddOperandsContext provides the operands add action context.
 type AddOperandsContext struct {
 	*goa.Context
