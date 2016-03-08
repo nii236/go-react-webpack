@@ -9,11 +9,11 @@ import (
 
 // OperandsController implements theoperands resource.
 type OperandsController struct {
-	goa.Controller
+	*goa.Controller
 }
 
 // NewOperandsController creates a operands controller.
-func NewOperandsController(service goa.Service) app.OperandsController {
+func NewOperandsController(service *goa.Service) *OperandsController {
 	return &OperandsController{Controller: service.NewController("operands")}
 }
 

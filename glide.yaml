@@ -1,0 +1,14 @@
+package: github.com/nii236/go-react-webpack
+import:
+- package: github.com/goadesign/goa
+  subpackages:
+  - design
+  - design/apidsl
+- package: github.com/goadesign/middleware
+  subpackages:
+  - cors
+- package: github.com/spf13/cobra
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: github.com/goadesign/logging

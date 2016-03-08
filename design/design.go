@@ -35,9 +35,9 @@ var _ = Resource("operands", func() {
 })
 
 var _ = Resource("authentication", func() {
-	Action("login", func() {
-		Routing(POST("login/:user/:pass"))
-		Description("login lets the user login to their previously registered account")
+	Action("Log into Google", func() {
+		Routing(GET("GoogleLogin"))
+		Description("This starts the oauth2 handshake process")
 		Params(func() {
 			Param("user", String, "Username")
 			Param("password", String, "Password")
@@ -45,19 +45,9 @@ var _ = Resource("authentication", func() {
 		Response(OK, "plain/text")
 	})
 
-	Action("logout", func() {
-		Routing(POST("logout/:user/:pass"))
-		Description("logout lets the user logout to their previously registered account")
-		Params(func() {
-			Param("user", String, "Username")
-			Param("password", String, "Password")
-		})
-		Response(OK, "plain/text")
-	})
-
-	Action("signup", func() {
-		Routing(POST("signup/:user/:pass"))
-		Description("signup lets a user create a new account")
+	Action("Callback response from Google", func() {
+		Routing(POST("GoogleCallback"))
+		Description("This will be the response code and random string from Google after oauth2")
 		Params(func() {
 			Param("user", String, "Left operand")
 			Param("password", String, "Password")

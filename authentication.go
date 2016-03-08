@@ -1,31 +1,31 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/goadesign/goa"
 	"github.com/nii236/go-react-webpack/app"
 )
 
-// AuthenticationController implements theauthentication resource.
+// AuthenticationController implements the authentication resource.
 type AuthenticationController struct {
-	goa.Controller
+	*goa.Controller
 }
 
 // NewAuthenticationController creates a authentication controller.
-func NewAuthenticationController(service goa.Service) app.AuthenticationController {
+func NewAuthenticationController(service *goa.Service) *AuthenticationController {
 	return &AuthenticationController{Controller: service.NewController("authentication")}
 }
 
-// Login runs the login action.
-func (c *AuthenticationController) Login(ctx *app.LoginAuthenticationContext) error {
+// CallbackResponseFromGoogle runs the Callback response from Google action.
+func (c *AuthenticationController) CallbackResponseFromGoogle(ctx *app.CallbackResponseFromGoogleAuthenticationContext) error {
 	return nil
 }
 
-// Logout runs the logout action.
-func (c *AuthenticationController) Logout(ctx *app.LogoutAuthenticationContext) error {
-	return nil
-}
-
-// Signup runs the signup action.
-func (c *AuthenticationController) Signup(ctx *app.SignupAuthenticationContext) error {
+// LogIntoGoogle runs the Log into Google action.
+func (c *AuthenticationController) LogIntoGoogle(ctx *app.LogIntoGoogleAuthenticationContext) error {
+	goa.Info(ctx, "HELLO!", goa.KV{"Key and a: ", "Value"})
+	r := goa.Response(ctx)
+	fmt.Fprintf(r, "TESTIN")
 	return nil
 }

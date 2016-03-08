@@ -12,94 +12,93 @@
 
 package app
 
-import "github.com/goadesign/goa"
+import (
+	"github.com/goadesign/goa"
+	"golang.org/x/net/context"
+	"net/http"
+)
+
+// inited is true if initService has been called
+var inited = false
+
+// initService sets up the service encoders, decoders and mux.
+func initService(service *goa.Service) {
+	if inited {
+		return
+	}
+	inited = true
+
+	// Setup encoders and decoders
+	service.Encoder(goa.NewJSONEncoder, "application/json")
+	service.Encoder(goa.NewGobEncoder, "application/gob", "application/x-gob")
+	service.Encoder(goa.NewXMLEncoder, "application/xml")
+	service.Decoder(goa.NewJSONDecoder, "application/json")
+	service.Decoder(goa.NewGobDecoder, "application/gob", "application/x-gob")
+	service.Decoder(goa.NewXMLDecoder, "application/xml")
+
+	// Setup default encoder and decoder
+	service.Encoder(goa.NewJSONEncoder, "*/*")
+	service.Decoder(goa.NewJSONDecoder, "*/*")
+}
 
 // AuthenticationController is the controller interface for the Authentication actions.
 type AuthenticationController interface {
-	goa.Controller
-	Login(*LoginAuthenticationContext) error
-	Logout(*LogoutAuthenticationContext) error
-	Signup(*SignupAuthenticationContext) error
+	goa.Muxer
+	CallbackResponseFromGoogle(*CallbackResponseFromGoogleAuthenticationContext) error
+	LogIntoGoogle(*LogIntoGoogleAuthenticationContext) error
 }
 
 // MountAuthenticationController "mounts" a Authentication resource controller on the given service.
-func MountAuthenticationController(service goa.Service, ctrl AuthenticationController) {
-	// Setup encoders and decoders. This is idempotent and is done by each MountXXX function.
-	service.SetEncoder(goa.GobEncoderFactory(), false, "application/gob", "application/x-gob")
-	service.SetEncoder(goa.JSONEncoderFactory(), true, "application/json")
-	service.SetEncoder(goa.XMLEncoderFactory(), false, "application/xml", "text/xml")
-	service.SetDecoder(goa.GobDecoderFactory(), false, "application/gob", "application/x-gob")
-	service.SetDecoder(goa.JSONDecoderFactory(), true, "application/json")
-	service.SetDecoder(goa.XMLDecoderFactory(), false, "application/xml", "text/xml")
-
-	// Setup endpoint handler
+func MountAuthenticationController(service *goa.Service, ctrl AuthenticationController) {
+	initService(service)
 	var h goa.Handler
-	mux := service.ServeMux()
-	h = func(c *goa.Context) error {
-		ctx, err := NewLoginAuthenticationContext(c)
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewCallbackResponseFromGoogleAuthenticationContext(ctx)
 		if err != nil {
 			return goa.NewBadRequestError(err)
 		}
-		return ctrl.Login(ctx)
+		return ctrl.CallbackResponseFromGoogle(rctx)
 	}
-	mux.Handle("POST", "/login/:user/:pass", ctrl.HandleFunc("Login", h, nil))
-	service.Info("mount", "ctrl", "Authentication", "action", "Login", "route", "POST /login/:user/:pass")
-	h = func(c *goa.Context) error {
-		ctx, err := NewLogoutAuthenticationContext(c)
+	service.Mux.Handle("POST", "/GoogleCallback", ctrl.MuxHandler("CallbackResponseFromGoogle", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "CallbackResponseFromGoogle"}, goa.KV{"route", "POST /GoogleCallback"})
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewLogIntoGoogleAuthenticationContext(ctx)
 		if err != nil {
 			return goa.NewBadRequestError(err)
 		}
-		return ctrl.Logout(ctx)
+		return ctrl.LogIntoGoogle(rctx)
 	}
-	mux.Handle("POST", "/logout/:user/:pass", ctrl.HandleFunc("Logout", h, nil))
-	service.Info("mount", "ctrl", "Authentication", "action", "Logout", "route", "POST /logout/:user/:pass")
-	h = func(c *goa.Context) error {
-		ctx, err := NewSignupAuthenticationContext(c)
-		if err != nil {
-			return goa.NewBadRequestError(err)
-		}
-		return ctrl.Signup(ctx)
-	}
-	mux.Handle("POST", "/signup/:user/:pass", ctrl.HandleFunc("Signup", h, nil))
-	service.Info("mount", "ctrl", "Authentication", "action", "Signup", "route", "POST /signup/:user/:pass")
+	service.Mux.Handle("GET", "/GoogleLogin", ctrl.MuxHandler("LogIntoGoogle", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "LogIntoGoogle"}, goa.KV{"route", "GET /GoogleLogin"})
 }
 
 // OperandsController is the controller interface for the Operands actions.
 type OperandsController interface {
-	goa.Controller
+	goa.Muxer
 	Add(*AddOperandsContext) error
 	Multiply(*MultiplyOperandsContext) error
 }
 
 // MountOperandsController "mounts" a Operands resource controller on the given service.
-func MountOperandsController(service goa.Service, ctrl OperandsController) {
-	// Setup encoders and decoders. This is idempotent and is done by each MountXXX function.
-	service.SetEncoder(goa.GobEncoderFactory(), false, "application/gob", "application/x-gob")
-	service.SetEncoder(goa.JSONEncoderFactory(), true, "application/json")
-	service.SetEncoder(goa.XMLEncoderFactory(), false, "application/xml", "text/xml")
-	service.SetDecoder(goa.GobDecoderFactory(), false, "application/gob", "application/x-gob")
-	service.SetDecoder(goa.JSONDecoderFactory(), true, "application/json")
-	service.SetDecoder(goa.XMLDecoderFactory(), false, "application/xml", "text/xml")
-
-	// Setup endpoint handler
+func MountOperandsController(service *goa.Service, ctrl OperandsController) {
+	initService(service)
 	var h goa.Handler
-	mux := service.ServeMux()
-	h = func(c *goa.Context) error {
-		ctx, err := NewAddOperandsContext(c)
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewAddOperandsContext(ctx)
 		if err != nil {
 			return goa.NewBadRequestError(err)
 		}
-		return ctrl.Add(ctx)
+		return ctrl.Add(rctx)
 	}
-	mux.Handle("GET", "/add/:left/:right", ctrl.HandleFunc("Add", h, nil))
-	service.Info("mount", "ctrl", "Operands", "action", "Add", "route", "GET /add/:left/:right")
-	h = func(c *goa.Context) error {
-		ctx, err := NewMultiplyOperandsContext(c)
+	service.Mux.Handle("GET", "/add/:left/:right", ctrl.MuxHandler("Add", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Operands"}, goa.KV{"action", "Add"}, goa.KV{"route", "GET /add/:left/:right"})
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewMultiplyOperandsContext(ctx)
 		if err != nil {
 			return goa.NewBadRequestError(err)
 		}
-		return ctrl.Multiply(ctx)
+		return ctrl.Multiply(rctx)
 	}
-	mux.Handle("GET", "/multiply/:left/:right", ctrl.HandleFunc("Multiply", h, nil))
-	service.Info("mount", "ctrl", "Operands", "action", "Multiply", "route", "GET /multiply/:left/:right")
+	service.Mux.Handle("GET", "/multiply/:left/:right", ctrl.MuxHandler("Multiply", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Operands"}, goa.KV{"action", "Multiply"}, goa.KV{"route", "GET /multiply/:left/:right"})
 }

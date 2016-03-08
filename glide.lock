@@ -1,0 +1,44 @@
+hash: b1b6e3079cf00253f8626c356cf126867c92d749e8031d50cfec69aa0a23fb8d
+updated: 2016-03-08T16:49:28.245254347+08:00
+imports:
+- name: bitbucket.org/pkg/inflect
+  version: 8961c3750a47
+- name: github.com/armon/go-metrics
+  version: f303b03b91d770a11a39677f1d3b55da4002bbcb
+- name: github.com/goadesign/goa
+  version: 3a7a0d4637afbfd672456d4c7ed02966104e420f
+  subpackages:
+  - design
+  - design/apidsl
+  - dslengine
+- name: github.com/goadesign/logging
+  version: e2a1cc1038c55aec3c20abcae784cfa618b7b9fd
+- name: github.com/goadesign/middleware
+  version: 9f893f18c03d4e140607dd81ab2e23287cae286f
+  subpackages:
+  - cors
+- name: github.com/julienschmidt/httprouter
+  version: 77366a47451a56bb3ba682481eed85b64fea14e8
+- name: github.com/manveru/faker
+  version: c24639bcbebfdad57cd23c7c13aa79c6cd450976
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+- name: github.com/spf13/cobra
+  version: 65a708cee0a4424f4e353d031ce440643e312f92
+- name: github.com/spf13/pflag
+  version: 7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7
+- name: github.com/zach-klippenstein/goregen
+  version: 795b5e3961ea1912fde60af417ad85e86acc0d6a
+- name: golang.org/x/net
+  version: a4bbce9fcae005b22ae5443f6af064d80a6f5a55
+  subpackages:
+  - context
+  - netutil
+- name: gopkg.in/inconshreveable/log15.v2
+  version: b105bd37f74e5d9dc7b6ad7806715c7a2b83fd3f
+  subpackages:
+  - stack
+  - term
+- name: gopkg.in/tylerb/graceful.v1
+  version: 119c58e176bce26fd40698146d9a106c8f1723a5
+devImports: []

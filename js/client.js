@@ -37,6 +37,50 @@ define(['axios'] , function (axios) {
     return client(cfg);
   }
 
+  // login lets the user login to their previously registered account
+  // path is the request path, the format is "/login/:user/:pass"
+  // password is used to build the request query string.
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.loginAuthentication = function (path, password, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'post',
+      params: {
+        password: password
+      },
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
+  // logout lets the user logout to their previously registered account
+  // path is the request path, the format is "/logout/:user/:pass"
+  // password is used to build the request query string.
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.logoutAuthentication = function (path, password, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'post',
+      params: {
+        password: password
+      },
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
   // multiply returns the multiplication of the left and right parameters in the response body
   // path is the request path, the format is "/multiply/:left/:right"
   // config is an optional object to be merged into the config built by the function prior to making the request.
@@ -47,6 +91,28 @@ define(['axios'] , function (axios) {
       timeout: timeout,
       url: urlPrefix + path,
       method: 'get',
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
+  // signup lets a user create a new account
+  // path is the request path, the format is "/signup/:user/:pass"
+  // password is used to build the request query string.
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.signupAuthentication = function (path, password, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'post',
+      params: {
+        password: password
+      },
       responseType: 'json'
     };
     if (config) {
