@@ -35,23 +35,20 @@ var _ = Resource("operands", func() {
 })
 
 var _ = Resource("authentication", func() {
+	Action("Log in", func() {
+		Routing(GET("Login"))
+		Description("This shows a screen of accepted logins")
+		Response(OK, "plain/text")
+	})
 	Action("Log into Google", func() {
 		Routing(GET("GoogleLogin"))
 		Description("This starts the oauth2 handshake process")
-		Params(func() {
-			Param("user", String, "Username")
-			Param("password", String, "Password")
-		})
 		Response(OK, "plain/text")
 	})
 
 	Action("Callback response from Google", func() {
-		Routing(POST("GoogleCallback"))
+		Routing(GET("GoogleCallback"))
 		Description("This will be the response code and random string from Google after oauth2")
-		Params(func() {
-			Param("user", String, "Left operand")
-			Param("password", String, "Password")
-		})
 		Response(OK, "plain/text")
 	})
 })

@@ -23,8 +23,6 @@ type CallbackResponseFromGoogleAuthenticationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Password *string
-	User     *string
 }
 
 // NewCallbackResponseFromGoogleAuthenticationContext parses the incoming request URL and body, performs validations and creates the
@@ -33,14 +31,6 @@ func NewCallbackResponseFromGoogleAuthenticationContext(ctx context.Context) (*C
 	var err error
 	req := goa.Request(ctx)
 	rctx := CallbackResponseFromGoogleAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
-	rawPassword := req.Params.Get("password")
-	if rawPassword != "" {
-		rctx.Password = &rawPassword
-	}
-	rawUser := req.Params.Get("user")
-	if rawUser != "" {
-		rctx.User = &rawUser
-	}
 	return &rctx, err
 }
 
@@ -52,13 +42,35 @@ func (ctx *CallbackResponseFromGoogleAuthenticationContext) OK(resp []byte) erro
 	return err
 }
 
+// LogInAuthenticationContext provides the authentication Log in action context.
+type LogInAuthenticationContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewLogInAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller Log in action.
+func NewLogInAuthenticationContext(ctx context.Context) (*LogInAuthenticationContext, error) {
+	var err error
+	req := goa.Request(ctx)
+	rctx := LogInAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *LogInAuthenticationContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "plain/text")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
 // LogIntoGoogleAuthenticationContext provides the authentication Log into Google action context.
 type LogIntoGoogleAuthenticationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Password *string
-	User     *string
 }
 
 // NewLogIntoGoogleAuthenticationContext parses the incoming request URL and body, performs validations and creates the
@@ -67,14 +79,6 @@ func NewLogIntoGoogleAuthenticationContext(ctx context.Context) (*LogIntoGoogleA
 	var err error
 	req := goa.Request(ctx)
 	rctx := LogIntoGoogleAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
-	rawPassword := req.Params.Get("password")
-	if rawPassword != "" {
-		rctx.Password = &rawPassword
-	}
-	rawUser := req.Params.Get("user")
-	if rawUser != "" {
-		rctx.User = &rawUser
-	}
 	return &rctx, err
 }
 

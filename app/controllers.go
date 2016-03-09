@@ -45,6 +45,7 @@ func initService(service *goa.Service) {
 type AuthenticationController interface {
 	goa.Muxer
 	CallbackResponseFromGoogle(*CallbackResponseFromGoogleAuthenticationContext) error
+	LogIn(*LogInAuthenticationContext) error
 	LogIntoGoogle(*LogIntoGoogleAuthenticationContext) error
 }
 
@@ -59,8 +60,17 @@ func MountAuthenticationController(service *goa.Service, ctrl AuthenticationCont
 		}
 		return ctrl.CallbackResponseFromGoogle(rctx)
 	}
-	service.Mux.Handle("POST", "/GoogleCallback", ctrl.MuxHandler("CallbackResponseFromGoogle", h, nil))
-	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "CallbackResponseFromGoogle"}, goa.KV{"route", "POST /GoogleCallback"})
+	service.Mux.Handle("GET", "/GoogleCallback", ctrl.MuxHandler("CallbackResponseFromGoogle", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "CallbackResponseFromGoogle"}, goa.KV{"route", "GET /GoogleCallback"})
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewLogInAuthenticationContext(ctx)
+		if err != nil {
+			return goa.NewBadRequestError(err)
+		}
+		return ctrl.LogIn(rctx)
+	}
+	service.Mux.Handle("GET", "/Login", ctrl.MuxHandler("LogIn", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "LogIn"}, goa.KV{"route", "GET /Login"})
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewLogIntoGoogleAuthenticationContext(ctx)
 		if err != nil {
