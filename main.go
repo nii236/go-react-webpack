@@ -6,8 +6,8 @@ import (
 	"github.com/goadesign/middleware"
 	"github.com/goadesign/middleware/cors"
 	"github.com/nii236/go-react-webpack/app"
-	"github.com/nii236/go-react-webpack/js"
 	"github.com/nii236/go-react-webpack/swagger"
+	"github.com/nii236/go-react-webpack/ui"
 	"gopkg.in/inconshreveable/log15.v2"
 )
 
@@ -45,9 +45,10 @@ func main() {
 	// Mount "operands" controller
 	c2 := NewOperandsController(service)
 	app.MountOperandsController(service, c2)
+	// Mount "ui" controller
+	ui.MountController(service)
 	// Mount Swagger spec provider controller
 	swagger.MountController(service)
-	js.MountController(service)
 
 	// Start service, listen on port 8080
 	service.ListenAndServe(":8080")

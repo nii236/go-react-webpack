@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"golang.org/x/oauth2"
@@ -44,28 +43,30 @@ func NewAuthenticationController(service *goa.Service) *AuthenticationController
 // CallbackResponseFromGoogle runs the Callback response from Google action.
 func (c *AuthenticationController) CallbackResponseFromGoogle(ctx *app.CallbackResponseFromGoogleAuthenticationContext) error {
 	w := goa.Response(ctx).ResponseWriter
-	r := goa.Request(ctx).Request
-	state := r.FormValue("state")
-	if state != oauthStateString {
-		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return nil
-	}
-
-	code := r.FormValue("code")
-	token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
-	if err != nil {
-		fmt.Println("Code exchange failed with:", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return nil
-	}
-
-	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
-
-	defer response.Body.Close()
-	contents, err := ioutil.ReadAll(response.Body)
-	fmt.Fprintf(w, "Content: %s\n", contents)
+	fmt.Fprintf(w, "Hello!")
 	return nil
+	// r := goa.Request(ctx).Request
+	// state := r.FormValue("state")
+	// if state != oauthStateString {
+	// 	fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
+	// 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	// 	return nil
+	// }
+	//
+	// code := r.FormValue("code")
+	// token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
+	// if err != nil {
+	// 	fmt.Println("Code exchange failed with:", err)
+	// 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	// 	return nil
+	// }
+	//
+	// response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	//
+	// defer response.Body.Close()
+	// contents, err := ioutil.ReadAll(response.Body)
+	// fmt.Fprintf(w, "{Content: %s,AuthToken: %s}", contents, token.AccessToken)
+	// return nil
 }
 
 // LogIn runs the Callback response from Google action.
