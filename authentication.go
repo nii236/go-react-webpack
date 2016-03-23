@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
@@ -20,29 +21,35 @@ import (
 var (
 	googleOauthConfig = &oauth2.Config{
 		RedirectURL:  "http://localhost:8080/GoogleCallback",
-		ClientID:     secrets.ClientID,
-		ClientSecret: secrets.ClientSecret,
+		ClientID:     secrets.Google.ID,
+		ClientSecret: secrets.Google.Secret,
 		Scopes: []string{"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint: google.Endpoint,
 	}
 
+	facebookEndpoint = &oauth2.Endpoint{
+		AuthURL:  "https://www.facebook.com/dialog/oauth",
+		TokenURL: "https://graph.facebook.com/v2.3/oauth/access_token",
+	}
+
 	facebookOauthConfig = &oauth2.Config{
 		RedirectURL:  "http://localhost:8080/facebookCallback",
-		ClientID:     secrets.ClientID,
-		ClientSecret: secrets.ClientSecret,
+		ClientID:     secrets.Facebook.ID,
+		ClientSecret: secrets.Facebook.Secret,
 		Scopes:       []string{},
-		Endpoint:     facebook.Endpoint,
+		Endpoint:     *facebookEndpoint,
 	}
 
 	githubOauthConfig = &oauth2.Config{
 		RedirectURL:  "http://localhost:8080/githubCallback",
-		ClientID:     secrets.ClientID,
-		ClientSecret: secrets.ClientSecret,
+		ClientID:     secrets.Github.ID,
+		ClientSecret: secrets.Github.Secret,
 		Scopes:       []string{},
 		Endpoint:     github.Endpoint,
 	}
-	// Some random string, random for each request
+
+	// Needs to be refactored to change on each request?
 	oauthStateString = string(rand.Int63())
 )
 
@@ -59,6 +66,15 @@ type AuthenticationController struct {
 // NewAuthenticationController creates a authentication controller.
 func NewAuthenticationController(service *goa.Service) *AuthenticationController {
 	return &AuthenticationController{Controller: service.NewController("authentication")}
+}
+
+// LogIntoGoogle runs the Log into Google action.
+func (c *AuthenticationController) LogIntoGoogle(ctx *app.LogIntoGoogleAuthenticationContext) error {
+	w := goa.Response(ctx).ResponseWriter
+	r := goa.Request(ctx).Request
+	url := googleOauthConfig.AuthCodeURL(oauthStateString)
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	return nil
 }
 
 // CallbackResponseFromGoogle runs the Callback response from Google action.
@@ -81,21 +97,15 @@ func (c *AuthenticationController) CallbackResponseFromGoogle(ctx *app.CallbackR
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return nil
 	}
-
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	defer response.Body.Close()
 
 	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("Issue parsing response body:", err)
+		return nil
+	}
 	fmt.Fprintf(w, "{Content: %s, AuthToken: %s}", contents, token.AccessToken)
-	return nil
-}
-
-// LogIntoGoogle runs the Log into Google action.
-func (c *AuthenticationController) LogIntoGoogle(ctx *app.LogIntoGoogleAuthenticationContext) error {
-	w := goa.Response(ctx).ResponseWriter
-	r := goa.Request(ctx).Request
-	url := googleOauthConfig.AuthCodeURL(oauthStateString)
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	return nil
 }
 
@@ -103,8 +113,17 @@ func (c *AuthenticationController) LogIntoGoogle(ctx *app.LogIntoGoogleAuthentic
 func (c *AuthenticationController) LogIntoFacebook(ctx *app.LogIntoFacebookAuthenticationContext) error {
 	w := goa.Response(ctx).ResponseWriter
 	r := goa.Request(ctx).Request
-	url := facebook.Endpoint.AuthURL
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	fbRedirectURL := &url.URL{
+		Scheme: "http",
+		Path:   facebook.Endpoint.AuthURL,
+	}
+	queries := fbRedirectURL.Query()
+	queries.Set("app_id", facebookOauthConfig.ClientID)
+	queries.Set("redirect_uri", facebookOauthConfig.RedirectURL)
+	queries.Set("state", oauthStateString)
+	fbRedirectURL.RawQuery = queries.Encode()
+	goa.Info(ctx, "redirect", goa.KV{Key: "EscapedPath", Value: fbRedirectURL.RequestURI()})
+	http.Redirect(w, r, fbRedirectURL.RequestURI(), http.StatusTemporaryRedirect)
 	return nil
 }
 
@@ -115,13 +134,38 @@ func (c *AuthenticationController) CallbackResponseFromFacebook(ctx *app.Callbac
 
 	code := r.FormValue("code")
 	state := r.FormValue("state")
-	fmt.Fprintf(w, "Hello! Code is: %s", code)
+	// fmt.Fprintf(w, "Hello! Code is: %s", code)
 
 	if state != oauthStateString {
 		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return nil
 	}
+	token, err := facebookOauthConfig.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		fmt.Println("Code exchange failed with:", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return nil
+	}
+
+	fbTokenURL := &url.URL{
+		Scheme: "http",
+		Path:   facebook.Endpoint.AuthURL,
+	}
+	queries := fbTokenURL.Query()
+	queries.Set("client_id", facebookOauthConfig.ClientID)
+	queries.Set("redirect_uri", facebookOauthConfig.RedirectURL)
+	queries.Set("client_secret", secrets.Facebook.Secret)
+	queries.Set("code", code)
+	fbTokenURL.RawQuery = queries.Encode()
+
+	response, err := http.Get(fbTokenURL.RequestURI())
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	goa.Info(ctx, "token received", goa.KV{Key: "AccessToken", Value: token.AccessToken})
+
 	return nil
 }
 
