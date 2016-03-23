@@ -30,8 +30,6 @@ func initService(service *goa.Service) {
 
 	// Setup encoders and decoders
 	service.Encoder(goa.NewJSONEncoder, "application/json")
-	service.Encoder(goa.NewGobEncoder, "application/gob", "application/x-gob")
-	service.Encoder(goa.NewXMLEncoder, "application/xml")
 	service.Decoder(goa.NewJSONDecoder, "application/json")
 	service.Decoder(goa.NewGobDecoder, "application/gob", "application/x-gob")
 	service.Decoder(goa.NewXMLDecoder, "application/xml")
@@ -44,8 +42,11 @@ func initService(service *goa.Service) {
 // AuthenticationController is the controller interface for the Authentication actions.
 type AuthenticationController interface {
 	goa.Muxer
+	CallbackResponseFromFacebook(*CallbackResponseFromFacebookAuthenticationContext) error
+	CallbackResponseFromGithub(*CallbackResponseFromGithubAuthenticationContext) error
 	CallbackResponseFromGoogle(*CallbackResponseFromGoogleAuthenticationContext) error
-	LogIn(*LogInAuthenticationContext) error
+	LogIntoFacebook(*LogIntoFacebookAuthenticationContext) error
+	LogIntoGithub(*LogIntoGithubAuthenticationContext) error
 	LogIntoGoogle(*LogIntoGoogleAuthenticationContext) error
 }
 
@@ -53,6 +54,24 @@ type AuthenticationController interface {
 func MountAuthenticationController(service *goa.Service, ctrl AuthenticationController) {
 	initService(service)
 	var h goa.Handler
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewCallbackResponseFromFacebookAuthenticationContext(ctx)
+		if err != nil {
+			return goa.NewBadRequestError(err)
+		}
+		return ctrl.CallbackResponseFromFacebook(rctx)
+	}
+	service.Mux.Handle("GET", "/FacebookCallback", ctrl.MuxHandler("CallbackResponseFromFacebook", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "CallbackResponseFromFacebook"}, goa.KV{"route", "GET /FacebookCallback"})
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewCallbackResponseFromGithubAuthenticationContext(ctx)
+		if err != nil {
+			return goa.NewBadRequestError(err)
+		}
+		return ctrl.CallbackResponseFromGithub(rctx)
+	}
+	service.Mux.Handle("GET", "/GithubCallback", ctrl.MuxHandler("CallbackResponseFromGithub", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "CallbackResponseFromGithub"}, goa.KV{"route", "GET /GithubCallback"})
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewCallbackResponseFromGoogleAuthenticationContext(ctx)
 		if err != nil {
@@ -63,14 +82,23 @@ func MountAuthenticationController(service *goa.Service, ctrl AuthenticationCont
 	service.Mux.Handle("GET", "/GoogleCallback", ctrl.MuxHandler("CallbackResponseFromGoogle", h, nil))
 	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "CallbackResponseFromGoogle"}, goa.KV{"route", "GET /GoogleCallback"})
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		rctx, err := NewLogInAuthenticationContext(ctx)
+		rctx, err := NewLogIntoFacebookAuthenticationContext(ctx)
 		if err != nil {
 			return goa.NewBadRequestError(err)
 		}
-		return ctrl.LogIn(rctx)
+		return ctrl.LogIntoFacebook(rctx)
 	}
-	service.Mux.Handle("GET", "/Login", ctrl.MuxHandler("LogIn", h, nil))
-	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "LogIn"}, goa.KV{"route", "GET /Login"})
+	service.Mux.Handle("GET", "/FacebookLogin", ctrl.MuxHandler("LogIntoFacebook", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "LogIntoFacebook"}, goa.KV{"route", "GET /FacebookLogin"})
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		rctx, err := NewLogIntoGithubAuthenticationContext(ctx)
+		if err != nil {
+			return goa.NewBadRequestError(err)
+		}
+		return ctrl.LogIntoGithub(rctx)
+	}
+	service.Mux.Handle("GET", "/GithubLogin", ctrl.MuxHandler("LogIntoGithub", h, nil))
+	goa.Info(goa.RootContext, "mount", goa.KV{"ctrl", "Authentication"}, goa.KV{"action", "LogIntoGithub"}, goa.KV{"route", "GET /GithubLogin"})
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		rctx, err := NewLogIntoGoogleAuthenticationContext(ctx)
 		if err != nil {

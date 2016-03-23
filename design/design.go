@@ -10,6 +10,7 @@ var _ = API("adder", func() {
 	Description("A teaser for goa")
 	Host("localhost:8080")
 	Scheme("http")
+	Produces("application/json")
 })
 
 var _ = Resource("operands", func() {
@@ -35,11 +36,6 @@ var _ = Resource("operands", func() {
 })
 
 var _ = Resource("authentication", func() {
-	Action("Log in", func() {
-		Routing(GET("Login"))
-		Description("This shows a screen of accepted logins")
-		Response(OK, "plain/text")
-	})
 	Action("Log into Google", func() {
 		Routing(GET("GoogleLogin"))
 		Description("This starts the oauth2 handshake process")
@@ -48,6 +44,28 @@ var _ = Resource("authentication", func() {
 
 	Action("Callback response from Google", func() {
 		Routing(GET("GoogleCallback"))
+		Description("This will be the response code and random string from Google after oauth2")
+		Response(OK, "plain/text")
+	})
+	Action("Log into Facebook", func() {
+		Routing(GET("FacebookLogin"))
+		Description("This starts the oauth2 handshake process")
+		Response(OK, "plain/text")
+	})
+
+	Action("Callback response from Facebook", func() {
+		Routing(GET("FacebookCallback"))
+		Description("This will be the response code and random string from Google after oauth2")
+		Response(OK, "plain/text")
+	})
+	Action("Log into Github", func() {
+		Routing(GET("GithubLogin"))
+		Description("This starts the oauth2 handshake process")
+		Response(OK, "plain/text")
+	})
+
+	Action("Callback response from Github", func() {
+		Routing(GET("GithubCallback"))
 		Description("This will be the response code and random string from Google after oauth2")
 		Response(OK, "plain/text")
 	})

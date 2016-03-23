@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/goadesign/goa"
 	goalog15 "github.com/goadesign/logging/log15"
 	"github.com/goadesign/middleware"
@@ -52,4 +54,5 @@ func main() {
 
 	// Start service, listen on port 8080
 	service.ListenAndServe(":8080")
+	fmt.Println("a ...interface{}")
 }

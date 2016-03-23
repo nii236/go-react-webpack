@@ -18,6 +18,54 @@ import (
 	"strconv"
 )
 
+// CallbackResponseFromFacebookAuthenticationContext provides the authentication Callback response from Facebook action context.
+type CallbackResponseFromFacebookAuthenticationContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewCallbackResponseFromFacebookAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller Callback response from Facebook action.
+func NewCallbackResponseFromFacebookAuthenticationContext(ctx context.Context) (*CallbackResponseFromFacebookAuthenticationContext, error) {
+	var err error
+	req := goa.Request(ctx)
+	rctx := CallbackResponseFromFacebookAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *CallbackResponseFromFacebookAuthenticationContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "plain/text")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// CallbackResponseFromGithubAuthenticationContext provides the authentication Callback response from Github action context.
+type CallbackResponseFromGithubAuthenticationContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewCallbackResponseFromGithubAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller Callback response from Github action.
+func NewCallbackResponseFromGithubAuthenticationContext(ctx context.Context) (*CallbackResponseFromGithubAuthenticationContext, error) {
+	var err error
+	req := goa.Request(ctx)
+	rctx := CallbackResponseFromGithubAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *CallbackResponseFromGithubAuthenticationContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "plain/text")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
 // CallbackResponseFromGoogleAuthenticationContext provides the authentication Callback response from Google action context.
 type CallbackResponseFromGoogleAuthenticationContext struct {
 	context.Context
@@ -42,24 +90,48 @@ func (ctx *CallbackResponseFromGoogleAuthenticationContext) OK(resp []byte) erro
 	return err
 }
 
-// LogInAuthenticationContext provides the authentication Log in action context.
-type LogInAuthenticationContext struct {
+// LogIntoFacebookAuthenticationContext provides the authentication Log into Facebook action context.
+type LogIntoFacebookAuthenticationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 }
 
-// NewLogInAuthenticationContext parses the incoming request URL and body, performs validations and creates the
-// context used by the authentication controller Log in action.
-func NewLogInAuthenticationContext(ctx context.Context) (*LogInAuthenticationContext, error) {
+// NewLogIntoFacebookAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller Log into Facebook action.
+func NewLogIntoFacebookAuthenticationContext(ctx context.Context) (*LogIntoFacebookAuthenticationContext, error) {
 	var err error
 	req := goa.Request(ctx)
-	rctx := LogInAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
+	rctx := LogIntoFacebookAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
 	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *LogInAuthenticationContext) OK(resp []byte) error {
+func (ctx *LogIntoFacebookAuthenticationContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "plain/text")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// LogIntoGithubAuthenticationContext provides the authentication Log into Github action context.
+type LogIntoGithubAuthenticationContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewLogIntoGithubAuthenticationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the authentication controller Log into Github action.
+func NewLogIntoGithubAuthenticationContext(ctx context.Context) (*LogIntoGithubAuthenticationContext, error) {
+	var err error
+	req := goa.Request(ctx)
+	rctx := LogIntoGithubAuthenticationContext{Context: ctx, ResponseData: goa.Response(ctx), RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *LogIntoGithubAuthenticationContext) OK(resp []byte) error {
 	ctx.ResponseData.Header().Set("Content-Type", "plain/text")
 	ctx.ResponseData.WriteHeader(200)
 	_, err := ctx.ResponseData.Write(resp)

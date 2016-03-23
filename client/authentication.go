@@ -6,14 +6,11 @@ import (
 	"net/url"
 )
 
-// login lets the user login to their previously registered account
-func (c *Client) LoginAuthentication(path string, password string) (*http.Response, error) {
+// This will be the response code and random string from Google after oauth2
+func (c *Client) CallbackResponseFromFacebookAuthentication(path string) (*http.Response, error) {
 	var body io.Reader
 	u := url.URL{Host: c.Host, Scheme: c.Scheme, Path: path}
-	values := u.Query()
-	values.Set("password", password)
-	u.RawQuery = values.Encode()
-	req, err := http.NewRequest("POST", u.String(), body)
+	req, err := http.NewRequest("GET", u.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -22,14 +19,11 @@ func (c *Client) LoginAuthentication(path string, password string) (*http.Respon
 	return c.Client.Do(req)
 }
 
-// logout lets the user logout to their previously registered account
-func (c *Client) LogoutAuthentication(path string, password string) (*http.Response, error) {
+// This will be the response code and random string from Google after oauth2
+func (c *Client) CallbackResponseFromGithubAuthentication(path string) (*http.Response, error) {
 	var body io.Reader
 	u := url.URL{Host: c.Host, Scheme: c.Scheme, Path: path}
-	values := u.Query()
-	values.Set("password", password)
-	u.RawQuery = values.Encode()
-	req, err := http.NewRequest("POST", u.String(), body)
+	req, err := http.NewRequest("GET", u.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -38,14 +32,50 @@ func (c *Client) LogoutAuthentication(path string, password string) (*http.Respo
 	return c.Client.Do(req)
 }
 
-// signup lets a user create a new account
-func (c *Client) SignupAuthentication(path string, password string) (*http.Response, error) {
+// This will be the response code and random string from Google after oauth2
+func (c *Client) CallbackResponseFromGoogleAuthentication(path string) (*http.Response, error) {
 	var body io.Reader
 	u := url.URL{Host: c.Host, Scheme: c.Scheme, Path: path}
-	values := u.Query()
-	values.Set("password", password)
-	u.RawQuery = values.Encode()
-	req, err := http.NewRequest("POST", u.String(), body)
+	req, err := http.NewRequest("GET", u.String(), body)
+	if err != nil {
+		return nil, err
+	}
+	header := req.Header
+	header.Set("Content-Type", "application/json")
+	return c.Client.Do(req)
+}
+
+// This starts the oauth2 handshake process
+func (c *Client) LogIntoFacebookAuthentication(path string) (*http.Response, error) {
+	var body io.Reader
+	u := url.URL{Host: c.Host, Scheme: c.Scheme, Path: path}
+	req, err := http.NewRequest("GET", u.String(), body)
+	if err != nil {
+		return nil, err
+	}
+	header := req.Header
+	header.Set("Content-Type", "application/json")
+	return c.Client.Do(req)
+}
+
+// This starts the oauth2 handshake process
+func (c *Client) LogIntoGithubAuthentication(path string) (*http.Response, error) {
+	var body io.Reader
+	u := url.URL{Host: c.Host, Scheme: c.Scheme, Path: path}
+	req, err := http.NewRequest("GET", u.String(), body)
+	if err != nil {
+		return nil, err
+	}
+	header := req.Header
+	header.Set("Content-Type", "application/json")
+	return c.Client.Do(req)
+}
+
+// This starts the oauth2 handshake process
+func (c *Client) LogIntoGoogleAuthentication(path string) (*http.Response, error) {
+	var body io.Reader
+	u := url.URL{Host: c.Host, Scheme: c.Scheme, Path: path}
+	req, err := http.NewRequest("GET", u.String(), body)
 	if err != nil {
 		return nil, err
 	}

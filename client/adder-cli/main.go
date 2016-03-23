@@ -92,12 +92,12 @@ func HandleResponse(c *client.Client, resp *http.Response) {
 func RegisterCommands(app *cobra.Command, c *client.Client) {
 	var command, sub *cobra.Command
 	command = &cobra.Command{
-		Use:   "add",
-		Short: "add returns the sum of the left and right parameters in the response body",
+		Use:   "Callback response from Facebook",
+		Short: "This will be the response code and random string from Google after oauth2",
 	}
-	tmp1 := new(AddOperandsCommand)
+	tmp1 := new(CallbackResponseFromFacebookAuthenticationCommand)
 	sub = &cobra.Command{
-		Use:   "operands",
+		Use:   "authentication",
 		Short: "",
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -105,10 +105,10 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "login",
-		Short: "login lets the user login to their previously registered account",
+		Use:   "Callback response from Github",
+		Short: "This will be the response code and random string from Google after oauth2",
 	}
-	tmp2 := new(LoginAuthenticationCommand)
+	tmp2 := new(CallbackResponseFromGithubAuthenticationCommand)
 	sub = &cobra.Command{
 		Use:   "authentication",
 		Short: "",
@@ -118,10 +118,10 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "logout",
-		Short: "logout lets the user logout to their previously registered account",
+		Use:   "Callback response from Google",
+		Short: "This will be the response code and random string from Google after oauth2",
 	}
-	tmp3 := new(LogoutAuthenticationCommand)
+	tmp3 := new(CallbackResponseFromGoogleAuthenticationCommand)
 	sub = &cobra.Command{
 		Use:   "authentication",
 		Short: "",
@@ -131,12 +131,12 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "multiply",
-		Short: "multiply returns the multiplication of the left and right parameters in the response body",
+		Use:   "Log into Facebook",
+		Short: "This starts the oauth2 handshake process",
 	}
-	tmp4 := new(MultiplyOperandsCommand)
+	tmp4 := new(LogIntoFacebookAuthenticationCommand)
 	sub = &cobra.Command{
-		Use:   "operands",
+		Use:   "authentication",
 		Short: "",
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
 	}
@@ -144,16 +144,55 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "signup",
-		Short: "signup lets a user create a new account",
+		Use:   "Log into Github",
+		Short: "This starts the oauth2 handshake process",
 	}
-	tmp5 := new(SignupAuthenticationCommand)
+	tmp5 := new(LogIntoGithubAuthenticationCommand)
 	sub = &cobra.Command{
 		Use:   "authentication",
 		Short: "",
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
 	}
 	tmp5.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "Log into Google",
+		Short: "This starts the oauth2 handshake process",
+	}
+	tmp6 := new(LogIntoGoogleAuthenticationCommand)
+	sub = &cobra.Command{
+		Use:   "authentication",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
+	}
+	tmp6.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "add",
+		Short: "add returns the sum of the left and right parameters in the response body",
+	}
+	tmp7 := new(AddOperandsCommand)
+	sub = &cobra.Command{
+		Use:   "operands",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
+	}
+	tmp7.RegisterFlags(sub)
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "multiply",
+		Short: "multiply returns the multiplication of the left and right parameters in the response body",
+	}
+	tmp8 := new(MultiplyOperandsCommand)
+	sub = &cobra.Command{
+		Use:   "operands",
+		Short: "",
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
+	}
+	tmp8.RegisterFlags(sub)
 	command.AddCommand(sub)
 	app.AddCommand(command)
 

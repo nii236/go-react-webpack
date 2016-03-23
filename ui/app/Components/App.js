@@ -17,10 +17,14 @@ export default class App extends Component {
   render() {
     return (
       <div className="react-app">
-        <button onClick={this.handleClick}>hello</button>
-        Click <a href="http://localhost:8080/GoogleLogin">here to login</a>
         <Login/>
         <div>
+          <i className="fa fa-google-plus-square fa-6x"></i>
+          <i className="fa fa-camera-retro fa-lg"></i> fa-lg
+          <i className="fa fa-camera-retro fa-2x"></i> fa-2x
+          <i className="fa fa-camera-retro fa-3x"></i> fa-3x
+          <i className="fa fa-camera-retro fa-4x"></i> fa-4x
+          <i className="fa fa-camera-retro fa-5x"></i> fa-5x
           <Add/>
           <Multiply/>
         </div>
